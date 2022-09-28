@@ -1,4 +1,11 @@
-import { anyChar, char, choice, eof } from './index'
+import { anyChar, char, choice, Context, count, eof } from './index'
+
+const createCtx = (txt: string): Context => {
+  return {
+    text: txt, rest: txt, position: 0
+  }
+}
+
 
 describe("anyChar", () => {
   test("success", () => {
@@ -82,6 +89,44 @@ describe("choice", () => {
       expected: '',
       context: {
         text: txt, rest: txt, position: 0
+      }
+    })
+  })
+})
+
+describe("count", () => {
+  test("success", () => {
+    const txt = 'aaaa'
+    expect(count(4, char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: ['a','a', 'a', 'a'],
+      context: {
+        text: txt, rest: '', position: 4
+      }
+    })
+    expect(count(2, char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: ['a','a'],
+      context: {
+        text: txt, rest: 'aa', position: 2
+      }
+    })
+  })
+
+  test("failed", () => {
+    const txt = 'a'
+    expect(count(2, char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: 'expected count 2 actual 1',
+      context: {
+        text: txt, rest: '', position: 1
+      }
+    })
+    expect(count(1, char('b'))(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: 'expected count 1 actual 0',
+      context: {
+        text: txt, rest: 'a', position: 0
       }
     })
   })

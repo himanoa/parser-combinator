@@ -1,4 +1,4 @@
-import { anyChar, eof } from './index'
+import { anyChar, char, choice, eof } from './index'
 
 describe("anyChar", () => {
   test("success", () => {
@@ -51,6 +51,37 @@ describe("eof", () => {
         text,
         rest: text,
         position: 0
+      }
+    })
+  })
+})
+
+describe("choice", () => {
+  test("success", () => {
+    const txtA = 'a'
+    const txtB = 'b'
+    expect(choice([char('a'), char('b')])({ text: txtA, rest: txtA, position: 0 })).toStrictEqual({
+      kind: 'success',
+      value: 'a',
+      context: {
+        text: txtA, rest: '', position: 1
+      }
+    })
+    expect(choice([char('a'), char('b')])({ text: txtB, rest: txtB, position: 0 })).toStrictEqual({
+      kind: 'success',
+      value: 'b',
+      context: {
+        text: txtB, rest: '', position: 1
+      }
+    })
+  })
+  test("failed", () => {
+    const txt = 'c'
+    expect(choice([char('a'), char('b')])({ text: txt, rest: txt, position: 0 })).toStrictEqual({
+      kind: 'error',
+      expected: '',
+      context: {
+        text: txt, rest: txt, position: 0
       }
     })
   })

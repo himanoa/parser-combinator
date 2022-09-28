@@ -56,3 +56,13 @@ export const char: <T extends string[0]>(c: T) => Parser<T> = (c) => (ctx) => {
   const [char, ...rest] = ctx.rest
   return char === c ? success(ctx, c, rest.join(""), 1) : failure(ctx, `${char} is not ${c}`)
 }
+
+
+export const choice:<T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T> =  <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx: Context) => {
+  for(const parser of parsers) {
+    const result = parser(ctx)
+    if(result.kind === 'success') return result
+  }
+  return failure(ctx, '')
+}
+

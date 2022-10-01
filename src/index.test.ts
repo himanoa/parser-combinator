@@ -63,6 +63,34 @@ describe("eof", () => {
   })
 })
 
+describe("char", () => {
+  test("success", () => {
+    const text = 'a'
+    expect(char('a')(createCtx(text))).toStrictEqual({
+      kind: 'success',
+      value: 'a',
+      context: {
+        text,
+        rest: '',
+        position: 1
+      }
+    })
+  })
+
+  test("failed", () => {
+    const text = 'b'
+    expect(char('a')(createCtx(text))).toStrictEqual({
+      kind: 'error',
+      expected: 'b is not a',
+      context: {
+        text,
+        rest: 'b',
+        position: 0
+      }
+    })
+  })
+})
+
 describe("choice", () => {
   test("success", () => {
     const txtA = 'a'

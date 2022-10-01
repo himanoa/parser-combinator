@@ -54,7 +54,7 @@ export const eof: Parser<null> = (ctx) => {
 
 export const char: <T extends string[0]>(c: T) => Parser<T> = (c) => (ctx) => {
   const [char] = ctx.rest
-  return char === c ? success(ctx, c, 1) : failure(ctx, `${char} is not ${c}`)
+  return char === c ? success(ctx, c, 1) : failure(ctx, `${char != null ? char : ''} is not ${c}`)
 }
 
 
@@ -96,5 +96,33 @@ export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> = <T>(pa
   }
 
   return success(currentCtx, results, 0)
+}
+
+export const many: <T>(parser: Parser<T>) => Parser<T[]> = <T>(parser: Parser<T>) => (ctx) => {
+  let results: T[] = []
+  let currentCtx = ctx
+
+  while(currentCtx.rest.length != 0) {
+    const result = parser(currentCtx)
+    currentCtx = result.context
+    if(result.kind === 'error') {
+      return success(currentCtx, results, 0)
+    }
+    results.push(result.value)
+  }
+  return success(currentCtx, results, 0)
+}
+
+export const many1: <T>(parser: Parser<T>) => Parser<T[]> = <T>(parser: Parser<T>) => (ctx) => {
+  const headResult = parser(ctx)
+  if(headResult.kind === 'error') return headResult;
+
+  const manyResult = many(parser)(headResult.context)
+
+  if(manyResult.kind === 'success') {
+    return success(manyResult.context, [headResult.value, ...manyResult.value], 0)
+  }
+
+  throw new Error("unreachable")
 }
 

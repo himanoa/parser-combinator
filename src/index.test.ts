@@ -1,4 +1,4 @@
-import { and, anyChar, char, choice, Context, count, eof } from './index'
+import { and, anyChar, char, choice, Context, count, eof, many, many1 } from './index'
 
 const createCtx = (txt: string): Context => {
   return {
@@ -88,6 +88,15 @@ describe("char", () => {
         position: 0
       }
     })
+    expect(char('a')(createCtx(''))).toStrictEqual({
+      kind: 'error',
+      expected: ' is not a',
+      context: {
+        text: '',
+        rest: '',
+        position: 0
+      }
+    })
   })
 })
 
@@ -174,15 +183,119 @@ describe("and", () => {
     })
   })
 
-  test.todo("failed", () => {
+  test("failed", () => {
     const txt = 'tru e'
-    expect(and(Array.from(txt).map(c => char(c)))(createCtx(txt))).toStrictEqual({
-      kind: 'failed',
+    expect(and(Array.from('true').map(c => char(c)))(createCtx(txt))).toStrictEqual({
+      kind: 'error',
       expected: '  is not e',
+      context: {
+        text: txt,
+        rest: ' e',
+        position: 3
+      }
+    })
+  })
+})
+
+describe("many", () => {
+  test("success: empty", () => {
+    const txt = ''
+    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [],
+      context: {
+        text: txt,
+        rest: '',
+        position: 0
+      }
+    })
+  })
+  test("success: not match", () => {
+    const txt = 'bbbb'
+    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [],
+      context: {
+        text: txt,
+        rest: 'bbbb',
+        position: 0
+      }
+    })
+  })
+  test("success: not exist rest", () => {
+    const txt = 'aaaa'
+    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...'aaaa'],
       context: {
         text: txt,
         rest: '',
         position: 4
+      }
+    })
+  })
+  test("success: exist rest", () => {
+    const txt = 'aaaab'
+    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...'aaaa'],
+      context: {
+        text: txt,
+        rest: 'b',
+        position: 4
+      }
+    })
+  })
+})
+
+describe("many1", () => {
+  test("success: not exist rest", () => {
+    const txt = 'aaaa'
+    expect(many1(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...'aaaa'],
+      context: {
+        text: txt,
+        rest: '',
+        position: 4
+      }
+    })
+  })
+  test("success: exist rest", () => {
+    const txt = 'aaaab'
+    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...'aaaa'],
+      context: {
+        text: txt,
+        rest: 'b',
+        position: 4
+      }
+    })
+  })
+
+  test("failed: empty", () => {
+    const txt = ''
+    expect(many1(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: ' is not a',
+      context: {
+        text: txt,
+        rest: '',
+        position: 0
+      }
+    })
+  })
+
+  test("failed: not match", () => {
+    const txt = 'bbbb'
+    expect(many1(char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: 'b is not a',
+      context: {
+        text: txt,
+        rest: 'bbbb',
+        position: 0
       }
     })
   })

@@ -1,4 +1,4 @@
-import { anyChar, char, choice, Context, count, eof } from './index'
+import { and, anyChar, char, choice, Context, count, eof } from './index'
 
 const createCtx = (txt: string): Context => {
   return {
@@ -127,6 +127,34 @@ describe("count", () => {
       expected: 'expected count 1 actual 0',
       context: {
         text: txt, rest: 'a', position: 0
+      }
+    })
+  })
+})
+
+describe("and", () => {
+  test("success", () => {
+    const txt = 'true'
+    expect(and(Array.from(txt).map(c => char(c)))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...txt],
+      context: {
+        text: txt,
+        rest: '',
+        position: 4
+      }
+    })
+  })
+
+  test.todo("failed", () => {
+    const txt = 'tru e'
+    expect(and(Array.from(txt).map(c => char(c)))(createCtx(txt))).toStrictEqual({
+      kind: 'failed',
+      expected: '  is not e',
+      context: {
+        text: txt,
+        rest: '',
+        position: 4
       }
     })
   })

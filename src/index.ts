@@ -82,3 +82,19 @@ export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> = <T>(c
   return success(currentCtx, results, 0)
 }
 
+export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> = <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx) => {
+  let results: T[] = []
+  let currentCtx = ctx;
+
+  for(const parser of parsers) {
+    const result = parser(currentCtx)
+    if(result.kind === 'error') {
+      return result
+    }
+    currentCtx = result.context
+    results.push(result.value)
+  }
+
+  return success(currentCtx, results, 0)
+}
+

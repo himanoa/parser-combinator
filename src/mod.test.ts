@@ -1,4 +1,4 @@
-import { and, anyChar, char, choice, Context, count, countMinMax, eof, many, many1, map, mapErr, str, surround } from './index'
+import { and, anyChar, char, choice, Context, count, countMinMax, eof, many, many1, map, mapErr, str, surround } from './mod'
 
 const createCtx = (txt: string): Context => {
   return {

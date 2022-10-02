@@ -1,4 +1,4 @@
-import { and, anyChar, char, choice, Context, count, eof, many, many1 } from './index'
+import { and, anyChar, char, choice, Context, count, countMinMax, eof, many, many1, map, mapErr, str, surround } from './index'
 
 const createCtx = (txt: string): Context => {
   return {
@@ -296,6 +296,119 @@ describe("many1", () => {
         text: txt,
         rest: 'bbbb',
         position: 0
+      }
+    })
+  })
+})
+
+describe("str", () => {
+  test('success', ()  => {
+    const txt = 'ab'
+    expect(str('ab')(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: ['a', 'b'],
+      context: {
+        text: txt,
+        rest: '',
+        position: 2
+      }
+    })
+  })
+  test('failed', ()  => {
+    const txt = 'ad'
+    expect(str('ab')(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: 'd is not b',
+      context: {
+        text: txt,
+        rest: 'd',
+        position: 1
+      }
+    })
+  })
+})
+
+describe("countMinMax", () => {
+  test("success", () => {
+    const txt = 'aaaaa'
+    expect(countMinMax(1,5, char('a'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...txt],
+      context: {
+        text: txt,
+        rest: '',
+        position: 5
+      }
+    })
+  })
+
+  test("failed", () => {
+    const txt = 'aaa'
+    const result = countMinMax(4,5, char('a'))(createCtx(txt))
+    expect(result).toStrictEqual({
+      kind: 'error',
+      expected: 'match count < 4',
+      context: {
+        text: txt,
+        rest: '',
+        position: 3
+      }
+    })
+  })
+})
+
+describe("map", () => {
+  test("success", () => {
+    const txt = 'adf'
+    expect(map(char('a'), () => 'b')(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: 'b',
+      context: {
+        text: txt,
+        rest: 'df',
+        position: 1
+      }
+    })
+  })
+})
+
+describe("mapErr", () => {
+  test("success", () => {
+    const txt = ''
+    expect(mapErr(char('a'), () => 'b')(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: 'b',
+      context: {
+        text: txt,
+        rest: '',
+        position: 0
+      }
+    })
+  })
+})
+
+describe("surround", () => {
+  test("success", () => {
+    const txt = "(abc)"
+    expect(surround('(', ')', str('abc'))(createCtx(txt))).toStrictEqual({
+      kind: 'success',
+      value: [...'abc'],
+      context: {
+        text: txt,
+        rest: '',
+        position: 5
+      }
+    })
+  })
+  test("failed", () => {
+    const txt = "(abc"
+    expect(surround('(', ')', str('abc'))(createCtx(txt))).toStrictEqual({
+      kind: 'error',
+      expected: ' is not )',
+      context: {
+        text: txt,
+        rest: '',
+        position: 4
       }
     })
   })

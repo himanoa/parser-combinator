@@ -126,3 +126,38 @@ export const many1: <T>(parser: Parser<T>) => Parser<T[]> = <T>(parser: Parser<T
   throw new Error("unreachable")
 }
 
+export const str: (value: string) => Parser<string[]> = (value) => and([...value].map(char))
+
+export const countMinMax: <T>(min: number, max: number, parser: Parser<T>) => Parser<T[]> = <T>(min: number, max: number, parser: Parser<T>) => (ctx) => {
+  const results = many(parser)(ctx)
+
+  if(results.kind === 'success') {
+    if(results.value.length < min) {
+      return failure(results.context, `match count < ${min}`)
+    }
+    if(max < results.value.length) {
+      return failure(results.context, `${max} < match count`)
+    }
+    return success(results.context, results.value, 0)
+  }
+
+  throw new Error("unreachable")
+}
+
+export const map: <T,U>(parser: Parser<T>, fn: (v: T) => U) => Parser<U> = (parser, fn) => (ctx) => {
+  const result = parser(ctx)
+  return result.kind === 'success' ? success(result.context, fn(result.value), 0) : result
+}
+
+export const mapErr: <T>(parser: Parser<T>, fn: (v: string) => string) => Parser<T> = (parser, fn) => (ctx) => {
+  const result = parser(ctx)
+  return result.kind === 'error' ? failure(result.context, fn(result.expected)) : result
+}
+
+export const surround: <T>(openChar: string, closeChar: string, parser: Parser<T>) => Parser<T> = <T>(openChar: string, closeChar: string, parser: Parser<T>) => (ctx) => {
+  return map(and<T>(
+    [char(openChar) as any, parser, char(closeChar) as any]
+  ), ([_, value]) => {
+    return value
+  })(ctx)
+}

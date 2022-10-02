@@ -2,7 +2,6 @@
   "name": "@himanoa/parser-combinator",
   "version": "0.0.1",
   "description": "parser combinator",
-  "main": "index.js",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest"

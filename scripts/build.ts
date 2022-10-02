@@ -5,7 +5,7 @@ const packageJson = Deno.readTextFileSync(new URL(import.meta.resolve('../packag
 await emptyDir("./npm");
 
 await build({
-  entryPoints: ["./src/index.ts"],
+  entryPoints: ["./mod.ts"],
   outDir: "./npm",
   shims: {
     // see JS docs for overview and more options

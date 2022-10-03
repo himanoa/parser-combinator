@@ -161,3 +161,13 @@ export const surround: <T>(openChar: string, closeChar: string, parser: Parser<T
     return value
   })(ctx)
 }
+
+export const createParser: <T>(parser: Parser<T>) => (target: string) => Result<T> = (parser) => (target) => {
+  const ctx: Context = {
+    text: target,
+    rest: target,
+    position: 0
+  }
+
+  return parser(ctx)
+}

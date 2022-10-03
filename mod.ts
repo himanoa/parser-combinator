@@ -68,7 +68,7 @@ export const choice:<T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T> =  <T>(p
 
 
 export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> = <T>(count: number, parser: Parser<T>) => (ctx) => {
-  let results: T[] = []
+  const results: T[] = []
   let currentCtx = ctx;
 
   for(let i = 0; i < count; i++) {
@@ -83,7 +83,7 @@ export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> = <T>(c
 }
 
 export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> = <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx) => {
-  let results: T[] = []
+  const results: T[] = []
   let currentCtx = ctx;
 
   for(const parser of parsers) {
@@ -99,7 +99,7 @@ export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> = <T>(pa
 }
 
 export const many: <T>(parser: Parser<T>) => Parser<T[]> = <T>(parser: Parser<T>) => (ctx) => {
-  let results: T[] = []
+  const results: T[] = []
   let currentCtx = ctx
 
   while(currentCtx.rest.length != 0) {
@@ -156,7 +156,7 @@ export const mapErr: <T>(parser: Parser<T>, fn: (v: string) => string) => Parser
 
 export const surround: <T>(openChar: string, closeChar: string, parser: Parser<T>) => Parser<T> = <T>(openChar: string, closeChar: string, parser: Parser<T>) => (ctx) => {
   return map(and<T>(
-    [char(openChar) as any, parser, char(closeChar) as any]
+    [char(openChar) as never, parser, char(closeChar) as never]
   ), ([_, value]) => {
     return value
   })(ctx)

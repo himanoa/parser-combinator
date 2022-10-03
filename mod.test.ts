@@ -1,4 +1,5 @@
 import { and, anyChar, char, choice, Context, count, countMinMax, eof, many, many1, map, mapErr, str, surround } from './mod.ts'
+import { assertEquals } from "https://deno.land/std@0.65.0/testing/asserts.ts";
 
 const createCtx = (txt: string): Context => {
   return {
@@ -7,10 +8,9 @@ const createCtx = (txt: string): Context => {
 }
 
 
-describe("anyChar", () => {
-  test("success", () => {
+Deno.test("anyChar:success", () => {
     const text = 'abc'
-    expect(anyChar({ text, rest: text, position: 0 })).toStrictEqual({
+    assertEquals(anyChar({ text, rest: text, position: 0 }), {
       kind: 'success',
       value: 'a',
       context: {
@@ -21,9 +21,9 @@ describe("anyChar", () => {
     })
   })
 
-  test("failed", () => {
+Deno.test("anyChar:failed", () => {
     const text = ''
-    expect(anyChar({ text, rest: text, position: 0 })).toStrictEqual({
+    assertEquals(anyChar({ text, rest: text, position: 0 }), {
       kind: 'error',
       expected: 'empty character',
       context: {
@@ -33,12 +33,11 @@ describe("anyChar", () => {
       }
     })
   })
-})
 
-describe("eof", () => {
-  test("success", () => {
+  Deno.test("eof:success", () => {
     const text = ""
-    expect(eof({ text, rest: text, position: 0 })).toStrictEqual({
+    assertEquals(eof({ text, rest: text, position: 0 }), {
+
       kind: 'success',
       value: null,
       context: {
@@ -49,9 +48,9 @@ describe("eof", () => {
     })
   })
 
-  test("failed", () => {
+  Deno.test("eof:failed", () => {
     const text = "a"
-    expect(eof({ text, rest: text, position: 0 })).toStrictEqual({
+    assertEquals(eof({ text, rest: text, position: 0 }), {
       kind: 'error',
       expected: 'not EOF',
       context: {
@@ -61,12 +60,10 @@ describe("eof", () => {
       }
     })
   })
-})
 
-describe("char", () => {
-  test("success", () => {
+  Deno.test("char:success", () => {
     const text = 'a'
-    expect(char('a')(createCtx(text))).toStrictEqual({
+    assertEquals(char('a')(createCtx(text)), {
       kind: 'success',
       value: 'a',
       context: {
@@ -77,9 +74,9 @@ describe("char", () => {
     })
   })
 
-  test("failed", () => {
+  Deno.test("char:failed", () => {
     const text = 'b'
-    expect(char('a')(createCtx(text))).toStrictEqual({
+    assertEquals(char('a')(createCtx(text)), {
       kind: 'error',
       expected: 'b is not a',
       context: {
@@ -88,7 +85,7 @@ describe("char", () => {
         position: 0
       }
     })
-    expect(char('a')(createCtx(''))).toStrictEqual({
+    assertEquals(char('a')(createCtx('')), {
       kind: 'error',
       expected: ' is not a',
       context: {
@@ -98,20 +95,18 @@ describe("char", () => {
       }
     })
   })
-})
 
-describe("choice", () => {
-  test("success", () => {
+  Deno.test("choice:success", () => {
     const txtA = 'a'
     const txtB = 'b'
-    expect(choice([char('a'), char('b')])({ text: txtA, rest: txtA, position: 0 })).toStrictEqual({
+    assertEquals(choice([char('a'), char('b')])({ text: txtA, rest: txtA, position: 0 }), {
       kind: 'success',
       value: 'a',
       context: {
         text: txtA, rest: '', position: 1
       }
     })
-    expect(choice([char('a'), char('b')])({ text: txtB, rest: txtB, position: 0 })).toStrictEqual({
+    assertEquals(choice([char('a'), char('b')])({ text: txtB, rest: txtB, position: 0 }), {
       kind: 'success',
       value: 'b',
       context: {
@@ -119,9 +114,9 @@ describe("choice", () => {
       }
     })
   })
-  test("failed", () => {
+  Deno.test("choice:failed", () => {
     const txt = 'c'
-    expect(choice([char('a'), char('b')])({ text: txt, rest: txt, position: 0 })).toStrictEqual({
+    assertEquals(choice([char('a'), char('b')])({ text: txt, rest: txt, position: 0 }), {
       kind: 'error',
       expected: '',
       context: {
@@ -129,19 +124,17 @@ describe("choice", () => {
       }
     })
   })
-})
 
-describe("count", () => {
-  test("success", () => {
+  Deno.test("count:success", () => {
     const txt = 'aaaa'
-    expect(count(4, char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(count(4, char('a'))(createCtx(txt)), {
       kind: 'success',
       value: ['a','a', 'a', 'a'],
       context: {
         text: txt, rest: '', position: 4
       }
     })
-    expect(count(2, char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(count(2, char('a'))(createCtx(txt)), {
       kind: 'success',
       value: ['a','a'],
       context: {
@@ -150,16 +143,17 @@ describe("count", () => {
     })
   })
 
-  test("failed", () => {
+  Deno.test("count:failed", () => {
     const txt = 'a'
-    expect(count(2, char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(count(2, char('a'))(createCtx(txt)), {
       kind: 'error',
       expected: 'expected count 2 actual 1',
       context: {
         text: txt, rest: '', position: 1
       }
     })
-    expect(count(1, char('b'))(createCtx(txt))).toStrictEqual({
+    assertEquals(count(1, char('b'))(createCtx(txt)), {
+
       kind: 'error',
       expected: 'expected count 1 actual 0',
       context: {
@@ -167,12 +161,10 @@ describe("count", () => {
       }
     })
   })
-})
 
-describe("and", () => {
-  test("success", () => {
+  Deno.test("and:success", () => {
     const txt = 'true'
-    expect(and(Array.from(txt).map(c => char(c)))(createCtx(txt))).toStrictEqual({
+    assertEquals(and(Array.from(txt).map(c => char(c)))(createCtx(txt)), {
       kind: 'success',
       value: [...txt],
       context: {
@@ -183,9 +175,9 @@ describe("and", () => {
     })
   })
 
-  test("failed", () => {
+  Deno.test("and:failed", () => {
     const txt = 'tru e'
-    expect(and(Array.from('true').map(c => char(c)))(createCtx(txt))).toStrictEqual({
+    assertEquals(and(Array.from('true').map(c => char(c)))(createCtx(txt)), {
       kind: 'error',
       expected: '  is not e',
       context: {
@@ -195,12 +187,10 @@ describe("and", () => {
       }
     })
   })
-})
 
-describe("many", () => {
-  test("success: empty", () => {
+  Deno.test("many:success:empty", () => {
     const txt = ''
-    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(many(char('a'))(createCtx(txt)), {
       kind: 'success',
       value: [],
       context: {
@@ -210,9 +200,9 @@ describe("many", () => {
       }
     })
   })
-  test("success: not match", () => {
+  Deno.test("many:success:not match", () => {
     const txt = 'bbbb'
-    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(many(char('a'))(createCtx(txt)), {
       kind: 'success',
       value: [],
       context: {
@@ -222,11 +212,11 @@ describe("many", () => {
       }
     })
   })
-  test("success: not exist rest", () => {
+  Deno.test("many:success: not exist rest", () => {
     const txt = 'aaaa'
-    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(many(char('a'))(createCtx(txt)), {
       kind: 'success',
-      value: [...'aaaa'],
+      value: [...'aaaa'] as "a"[],
       context: {
         text: txt,
         rest: '',
@@ -234,38 +224,11 @@ describe("many", () => {
       }
     })
   })
-  test("success: exist rest", () => {
+  Deno.test("many:success: exist rest", () => {
     const txt = 'aaaab'
-    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(many(char('a'))(createCtx(txt)), {
       kind: 'success',
-      value: [...'aaaa'],
-      context: {
-        text: txt,
-        rest: 'b',
-        position: 4
-      }
-    })
-  })
-})
-
-describe("many1", () => {
-  test("success: not exist rest", () => {
-    const txt = 'aaaa'
-    expect(many1(char('a'))(createCtx(txt))).toStrictEqual({
-      kind: 'success',
-      value: [...'aaaa'],
-      context: {
-        text: txt,
-        rest: '',
-        position: 4
-      }
-    })
-  })
-  test("success: exist rest", () => {
-    const txt = 'aaaab'
-    expect(many(char('a'))(createCtx(txt))).toStrictEqual({
-      kind: 'success',
-      value: [...'aaaa'],
+      value: [...'aaaa'] as "a"[],
       context: {
         text: txt,
         rest: 'b',
@@ -274,9 +237,34 @@ describe("many1", () => {
     })
   })
 
-  test("failed: empty", () => {
+  Deno.test("many1:success: not exist rest", () => {
+    const txt = 'aaaa'
+    assertEquals(many1(char('a'))(createCtx(txt)), {
+      kind: 'success',
+      value: [...'aaaa'] as "a"[],
+      context: {
+        text: txt,
+        rest: '',
+        position: 4
+      }
+    })
+  })
+  Deno.test("many:success: exist rest", () => {
+    const txt = 'aaaab'
+    assertEquals(many(char('a'))(createCtx(txt)), {
+      kind: 'success',
+      value: [...'aaaa'] as "a"[],
+      context: {
+        text: txt,
+        rest: 'b',
+        position: 4
+      }
+    })
+  })
+
+  Deno.test("many1:failed: empty", () => {
     const txt = ''
-    expect(many1(char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(many1(char('a'))(createCtx(txt)), {
       kind: 'error',
       expected: ' is not a',
       context: {
@@ -287,9 +275,9 @@ describe("many1", () => {
     })
   })
 
-  test("failed: not match", () => {
+  Deno.test("many1:failed: not match", () => {
     const txt = 'bbbb'
-    expect(many1(char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(many1(char('a'))(createCtx(txt)), {
       kind: 'error',
       expected: 'b is not a',
       context: {
@@ -299,12 +287,10 @@ describe("many1", () => {
       }
     })
   })
-})
 
-describe("str", () => {
-  test('success', ()  => {
+  Deno.test('str:success', ()  => {
     const txt = 'ab'
-    expect(str('ab')(createCtx(txt))).toStrictEqual({
+    assertEquals(str('ab')(createCtx(txt)), {
       kind: 'success',
       value: ['a', 'b'],
       context: {
@@ -314,9 +300,9 @@ describe("str", () => {
       }
     })
   })
-  test('failed', ()  => {
+  Deno.test('str:failed', ()  => {
     const txt = 'ad'
-    expect(str('ab')(createCtx(txt))).toStrictEqual({
+    assertEquals(str('ab')(createCtx(txt)), {
       kind: 'error',
       expected: 'd is not b',
       context: {
@@ -326,14 +312,12 @@ describe("str", () => {
       }
     })
   })
-})
 
-describe("countMinMax", () => {
-  test("success", () => {
+  Deno.test("countMinMax:success", () => {
     const txt = 'aaaaa'
-    expect(countMinMax(1,5, char('a'))(createCtx(txt))).toStrictEqual({
+    assertEquals(countMinMax(1,5, char('a'))(createCtx(txt)), {
       kind: 'success',
-      value: [...txt],
+      value: [...txt] as "a"[],
       context: {
         text: txt,
         rest: '',
@@ -342,10 +326,10 @@ describe("countMinMax", () => {
     })
   })
 
-  test("failed", () => {
+  Deno.test("countMinMax:failed", () => {
     const txt = 'aaa'
     const result = countMinMax(4,5, char('a'))(createCtx(txt))
-    expect(result).toStrictEqual({
+    assertEquals(result, {
       kind: 'error',
       expected: 'match count < 4',
       context: {
@@ -355,12 +339,10 @@ describe("countMinMax", () => {
       }
     })
   })
-})
 
-describe("map", () => {
-  test("success", () => {
+  Deno.test("map:success", () => {
     const txt = 'adf'
-    expect(map(char('a'), () => 'b')(createCtx(txt))).toStrictEqual({
+    assertEquals(map(char('a'), () => 'b')(createCtx(txt)), {
       kind: 'success',
       value: 'b',
       context: {
@@ -370,12 +352,10 @@ describe("map", () => {
       }
     })
   })
-})
 
-describe("mapErr", () => {
-  test("success", () => {
+  Deno.test("mapErr;success", () => {
     const txt = ''
-    expect(mapErr(char('a'), () => 'b')(createCtx(txt))).toStrictEqual({
+    assertEquals(mapErr(char('a'), () => 'b')(createCtx(txt)), {
       kind: 'error',
       expected: 'b',
       context: {
@@ -385,12 +365,10 @@ describe("mapErr", () => {
       }
     })
   })
-})
 
-describe("surround", () => {
-  test("success", () => {
+  Deno.test("surround:success", () => {
     const txt = "(abc)"
-    expect(surround('(', ')', str('abc'))(createCtx(txt))).toStrictEqual({
+    assertEquals(surround('(', ')', str('abc'))(createCtx(txt)), {
       kind: 'success',
       value: [...'abc'],
       context: {
@@ -400,9 +378,9 @@ describe("surround", () => {
       }
     })
   })
-  test("failed", () => {
+  Deno.test("surround:failed", () => {
     const txt = "(abc"
-    expect(surround('(', ')', str('abc'))(createCtx(txt))).toStrictEqual({
+    assertEquals(surround('(', ')', str('abc'))(createCtx(txt)), {
       kind: 'error',
       expected: ' is not )',
       context: {
@@ -412,4 +390,3 @@ describe("surround", () => {
       }
     })
   })
-})

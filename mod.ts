@@ -90,9 +90,283 @@ export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> =
     return success(currentCtx, results, 0);
   };
 
-export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> =
-  <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx) => {
-    const results: T[] = [];
+
+export function and<
+T0,
+>(parsers: [Parser<T0>]): Parser<[T0]>;
+export function and<
+T0,
+T1,
+>(parsers: [Parser<T0>,Parser<T1>]): Parser<[T0,T1]>;
+export function and<
+T0,
+T1,
+T2,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>]): Parser<[T0,T1,T2]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>]): Parser<[T0,T1,T2,T3]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>]): Parser<[T0,T1,T2,T3,T4]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>]): Parser<[T0,T1,T2,T3,T4,T5]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>]): Parser<[T0,T1,T2,T3,T4,T5,T6]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+T15,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>,Parser<T15>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+T15,
+T16,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>,Parser<T15>,Parser<T16>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+T15,
+T16,
+T17,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>,Parser<T15>,Parser<T16>,Parser<T17>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16,T17]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+T15,
+T16,
+T17,
+T18,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>,Parser<T15>,Parser<T16>,Parser<T17>,Parser<T18>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16,T17,T18]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+T15,
+T16,
+T17,
+T18,
+T19,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>,Parser<T15>,Parser<T16>,Parser<T17>,Parser<T18>,Parser<T19>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16,T17,T18,T19]>;
+export function and<
+T0,
+T1,
+T2,
+T3,
+T4,
+T5,
+T6,
+T7,
+T8,
+T9,
+T10,
+T11,
+T12,
+T13,
+T14,
+T15,
+T16,
+T17,
+T18,
+T19,
+T20,
+>(parsers: [Parser<T0>,Parser<T1>,Parser<T2>,Parser<T3>,Parser<T4>,Parser<T5>,Parser<T6>,Parser<T7>,Parser<T8>,Parser<T9>,Parser<T10>,Parser<T11>,Parser<T12>,Parser<T13>,Parser<T14>,Parser<T15>,Parser<T16>,Parser<T17>,Parser<T18>,Parser<T19>,Parser<T20>]): Parser<[T0,T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16,T17,T18,T19,T20]>;
+export function and(parsers: ReadonlyArray<Parser<any>>): Parser<any[]> {
+  return (ctx) => {
+    const results: any[] = [];
     let currentCtx = ctx;
 
     for (const parser of parsers) {
@@ -106,6 +380,7 @@ export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> =
 
     return success(currentCtx, results, 0);
   };
+}
 
 export const many: <T>(parser: Parser<T>) => Parser<T[]> =
   <T>(parser: Parser<T>) => (ctx) => {
@@ -141,7 +416,7 @@ export const many1: <T>(parser: Parser<T>) => Parser<T[]> =
   };
 
 export const str: (value: string) => Parser<string[]> = (value) =>
-  and([...value].map(char));
+  and(([...value] as any).map(char));
 
 export const satisfy: (predicate: (c: string) => boolean) => Parser<string> =
   (predicate) => (ctx) => {
@@ -216,7 +491,7 @@ export const surround: <T>(
 ) => Parser<T> =
   <T>(openChar: string, closeChar: string, parser: Parser<T>) => (ctx) => {
     return map(
-      and<T>(
+      and(
         [skip(char(openChar)), parser, skip(char(closeChar))],
       ),
       ([_, value]) => {

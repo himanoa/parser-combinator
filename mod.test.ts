@@ -204,9 +204,9 @@ Deno.test("count:failed", () => {
 
 Deno.test("and:success", () => {
   const txt = "true";
-  assertEquals(and(Array.from(txt).map((c) => char(c)))(createCtx(txt)), {
+  assertEquals(and([char('t'), char('r'), char('u'), char('e')])(createCtx(txt)), {
     kind: "success",
-    value: [...txt],
+    value: ['t', 'r', 'u', 'e'],
     context: {
       text: txt,
       rest: "",
@@ -217,7 +217,7 @@ Deno.test("and:success", () => {
 
 Deno.test("and:failed", () => {
   const txt = "tru e";
-  assertEquals(and(Array.from("true").map((c) => char(c)))(createCtx(txt)), {
+  assertEquals(and([char('t'), char('r'), char('u'), char('e')])(createCtx(txt)), {
     kind: "error",
     expected: "  is not e",
     context: {

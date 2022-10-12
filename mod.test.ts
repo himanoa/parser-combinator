@@ -432,92 +432,95 @@ Deno.test("surround:failed", () => {
 });
 
 Deno.test("satisfy: success", () => {
-  const txt = 'ab'
-  assertEquals(satisfy((c) => c != 'd')(createCtx(txt)), {
-    kind: 'success',
-    value: 'a',
+  const txt = "ab";
+  assertEquals(satisfy((c) => c != "d")(createCtx(txt)), {
+    kind: "success",
+    value: "a",
     context: {
       text: txt,
-      rest: 'b',
-      position: 1
-    }
-  })
-})
+      rest: "b",
+      position: 1,
+    },
+  });
+});
 
 Deno.test("satisfy: failure", () => {
-  const txt = 'ab'
-  assertEquals<ReturnType<ReturnType<typeof satisfy>>>(satisfy((c) => c != 'a')(createCtx(txt)), {
-    kind: 'error',
-    expected: 'no match predicate',
-    context: {
-      text: txt,
-      rest: 'ab',
-      position: 0
-    }
-  })
-})
+  const txt = "ab";
+  assertEquals<ReturnType<ReturnType<typeof satisfy>>>(
+    satisfy((c) => c != "a")(createCtx(txt)),
+    {
+      kind: "error",
+      expected: "no match predicate",
+      context: {
+        text: txt,
+        rest: "ab",
+        position: 0,
+      },
+    },
+  );
+});
 
 Deno.test("not:success", () => {
-  const txt = 'ab'
-  assertEquals(not(satisfy((c) => c == 'd'))(createCtx(txt)), {
-    kind: 'success',
+  const txt = "ab";
+  assertEquals(not(satisfy((c) => c == "d"))(createCtx(txt)), {
+    kind: "success",
     value: null as never,
     context: {
       text: txt,
-      rest: 'b',
-      position: 1
-    }
-  })
-})
+      rest: "b",
+      position: 1,
+    },
+  });
+});
 
 Deno.test("not:failure", () => {
-  const txt = 'ab'
-  assertEquals(not(satisfy((c) => c == 'a'))(createCtx(txt)), {
-    kind: 'error',
-    expected: 'matched',
+  const txt = "ab";
+  assertEquals(not(satisfy((c) => c == "a"))(createCtx(txt)), {
+    kind: "error",
+    expected: "matched",
     context: {
       text: txt,
-      rest: 'ab',
-      position: 0
-    }
-  })
-})
+      rest: "ab",
+      position: 0,
+    },
+  });
+});
 
 Deno.test("skip:success", () => {
-  const txt = 'ab'
-  assertEquals(skip(char('a'))(createCtx(txt)), {
-    kind: 'success',
+  const txt = "ab";
+  assertEquals(skip(char("a"))(createCtx(txt)), {
+    kind: "success",
     value: null as never,
     context: {
       text: txt,
-      rest: 'b',
-      position: 1
-    }
-  })
-})
+      rest: "b",
+      position: 1,
+    },
+  });
+});
 
 Deno.test("skip:success:many", () => {
-  const txt = 'aab'
-  assertEquals(skip(count(2, char('a')))(createCtx(txt)), {
-    kind: 'success',
+  const txt = "aab";
+  assertEquals(skip(count(2, char("a")))(createCtx(txt)), {
+    kind: "success",
     value: null as never,
     context: {
       text: txt,
-      rest: 'b',
-      position: 2
-    }
-  })
-})
+      rest: "b",
+      position: 2,
+    },
+  });
+});
 
 Deno.test("skip:error", () => {
-  const txt = 'ab'
-  assertEquals(skip(char('d'))(createCtx(txt)), {
-    kind: 'error',
-    expected: 'a is not d',
+  const txt = "ab";
+  assertEquals(skip(char("d"))(createCtx(txt)), {
+    kind: "error",
+    expected: "a is not d",
     context: {
       text: txt,
-      rest: 'ab',
-      position: 0
-    }
-  })
-})
+      rest: "ab",
+      position: 0,
+    },
+  });
+});

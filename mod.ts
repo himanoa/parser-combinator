@@ -154,20 +154,20 @@ export const satisfy: (predicate: (c: string) => boolean) => Parser<string> =
 
 export const not: <T>(parser: Parser<T>) => Parser<never> =
   (parser) => (ctx) => {
-    const headResult = parser(ctx)
-    if(headResult.kind === 'error') {
-      return success(ctx, null as never, 1)
+    const headResult = parser(ctx);
+    if (headResult.kind === "error") {
+      return success(ctx, null as never, 1);
     }
-    return failure(ctx, 'matched')
+    return failure(ctx, "matched");
   };
 
 export const skip: <T>(parser: Parser<T>) => Parser<never> =
   (parser) => (ctx) => {
-    const headResult = parser(ctx)
-    if(headResult.kind === 'success') {
-      return success(headResult.context, null as never, 0)
+    const headResult = parser(ctx);
+    if (headResult.kind === "success") {
+      return success(headResult.context, null as never, 0);
     }
-    return failure(ctx, headResult.expected)
+    return failure(ctx, headResult.expected);
   };
 
 export const countMinMax: <T>(

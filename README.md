@@ -61,3 +61,6 @@ console.log(
 - map: convert `value` when parse success
 - mapErr: convert `expected` when parse failed
 - surround: Parse open followed by parser followed by close
+- not: Reverse parser result
+- skip: Crush parse results with never
+- satisfy: Parses a token and succeeds depending on the result of predicate

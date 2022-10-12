@@ -11,30 +11,37 @@ parser-combinator library for typescript
 ## Example
 
 ```typescript
-import { choice, map, str, createParser } from "@himanoa/parser-combinator"
+import { choice, createParser, map, str } from "@himanoa/parser-combinator";
 
 const booleanSymbol = choice([
   map(str("true"), () => true),
-  map(str("false"), () => false)
-])
+  map(str("false"), () => false),
+]);
 
-const parser = createParser(booleanSymbol)
+const parser = createParser(booleanSymbol);
 
-const trueResult = parser("true")
+const trueResult = parser("true");
 
-console.log(trueResult.kind === 'success' ? trueResult.value : "failed parse")
-console.log(trueResult.kind === 'success' ? trueResult.value : "failed parse")
+console.log(trueResult.kind === "success" ? trueResult.value : "failed parse");
+console.log(trueResult.kind === "success" ? trueResult.value : "failed parse");
 
-const falseResult = parser("false")
+const falseResult = parser("false");
 
-console.log(falseResult.kind === 'success' ? falseResult.value : "failed parse")
-console.log(falseResult.kind === 'success' ? falseResult.value : "failed parse")
+console.log(
+  falseResult.kind === "success" ? falseResult.value : "failed parse",
+);
+console.log(
+  falseResult.kind === "success" ? falseResult.value : "failed parse",
+);
 
+const failedResult = parser("asdfasdf");
 
-const failedResult = parser("asdfasdf")
-
-console.log(failedResult.kind === 'success' ? failedResult.value : "failed parse")
-console.log(failedResult.kind === 'success' ? failedResult.value : "failed parse")
+console.log(
+  failedResult.kind === "success" ? failedResult.value : "failed parse",
+);
+console.log(
+  failedResult.kind === "success" ? failedResult.value : "failed parse",
+);
 ```
 
 ## API
@@ -45,8 +52,10 @@ console.log(failedResult.kind === 'success' ? failedResult.value : "failed parse
 - choice: Parse any one matching token from multiple parsers
 - count: Parse parser from zero up to count times
 - and: Parse all parsers
-- many: Parse parser from zero or more tiems returning a Array with the values from p
-- many1: Parse parser from one or more tiems returning a Array with the values from p
+- many: Parse parser from zero or more tiems returning a Array with the values
+  from p
+- many1: Parse parser from one or more tiems returning a Array with the values
+  from p
 - str: Parse many char token
 - countMinMax: Parse parser from min to max times
 - map: convert `value` when parse success

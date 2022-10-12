@@ -1,173 +1,238 @@
-type Parser<T> = (ctx: Context) => Result<T>
+type Parser<T> = (ctx: Context) => Result<T>;
 
-type Result<T> = Success<T> | Failure
+type Result<T> = Success<T> | Failure;
 
 type Success<T> = {
-  kind: 'success',
-  value: T,
-  context: Context
-}
+  kind: "success";
+  value: T;
+  context: Context;
+};
 
 type Failure = {
-  kind: 'error',
-  expected: string,
-  context: Context
-}
+  kind: "error";
+  expected: string;
+  context: Context;
+};
 
 export type Context = {
-  text: string,
-  rest: string
-  position: number
-}
+  text: string;
+  rest: string;
+  position: number;
+};
 
-const success = <T>(ctx: Context, value: T, consumeCount: number): Success<T> => {
+const success = <T>(
+  ctx: Context,
+  value: T,
+  consumeCount: number,
+): Success<T> => {
   return {
     value,
-    kind: 'success',
+    kind: "success",
     context: {
       text: ctx.text,
       rest: ctx.rest.slice(consumeCount),
-      position: ctx.position + consumeCount
-    }
-  }
-}
+      position: ctx.position + consumeCount,
+    },
+  };
+};
 
 const failure = (ctx: Context, expected: string): Failure => {
   return {
     expected,
-    kind: 'error',
-    context: ctx
-  }
-}
+    kind: "error",
+    context: ctx,
+  };
+};
 
 export const anyChar: Parser<string> = (ctx) => {
-  const [char] = ctx.rest
-  return char != null ? success(ctx, char, 1) : failure(ctx, "empty character")
-}
+  const [char] = ctx.rest;
+  return char != null ? success(ctx, char, 1) : failure(ctx, "empty character");
+};
 
 export const eof: Parser<null> = (ctx) => {
-  if(ctx.text.length === ctx.position) {
-    return success(ctx, null, 0)
+  if (ctx.text.length === ctx.position) {
+    return success(ctx, null, 0);
   }
-  return failure(ctx, "not EOF")
-}
+  return failure(ctx, "not EOF");
+};
 
 export const char: <T extends string[0]>(c: T) => Parser<T> = (c) => (ctx) => {
-  const [char] = ctx.rest
-  return char === c ? success(ctx, c, 1) : failure(ctx, `${char != null ? char : ''} is not ${c}`)
-}
+  const [char] = ctx.rest;
+  return char === c
+    ? success(ctx, c, 1)
+    : failure(ctx, `${char != null ? char : ""} is not ${c}`);
+};
 
-
-export const choice:<T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T> =  <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx: Context) => {
-  for(const parser of parsers) {
-    const result = parser(ctx)
-    if(result.kind === 'success') return result
-  }
-  return failure(ctx, '')
-}
-
-
-export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> = <T>(count: number, parser: Parser<T>) => (ctx) => {
-  const results: T[] = []
-  let currentCtx = ctx;
-
-  for(let i = 0; i < count; i++) {
-    const result = parser(currentCtx)
-    if(result.kind === 'error') return failure(currentCtx, `expected count ${count} actual ${i}`)
-
-    results.push(result.value)
-    currentCtx = result.context
-  }
-
-  return success(currentCtx, results, 0)
-}
-
-export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> = <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx) => {
-  const results: T[] = []
-  let currentCtx = ctx;
-
-  for(const parser of parsers) {
-    const result = parser(currentCtx)
-    if(result.kind === 'error') {
-      return result
+export const choice: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T> =
+  <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx: Context) => {
+    for (const parser of parsers) {
+      const result = parser(ctx);
+      if (result.kind === "success") return result;
     }
-    currentCtx = result.context
-    results.push(result.value)
-  }
+    return failure(ctx, "");
+  };
 
-  return success(currentCtx, results, 0)
-}
+export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> =
+  <T>(count: number, parser: Parser<T>) => (ctx) => {
+    const results: T[] = [];
+    let currentCtx = ctx;
 
-export const many: <T>(parser: Parser<T>) => Parser<T[]> = <T>(parser: Parser<T>) => (ctx) => {
-  const results: T[] = []
-  let currentCtx = ctx
+    for (let i = 0; i < count; i++) {
+      const result = parser(currentCtx);
+      if (result.kind === "error") {
+        return failure(currentCtx, `expected count ${count} actual ${i}`);
+      }
 
-  while(currentCtx.rest.length != 0) {
-    const result = parser(currentCtx)
-    currentCtx = result.context
-    if(result.kind === 'error') {
-      return success(currentCtx, results, 0)
+      results.push(result.value);
+      currentCtx = result.context;
     }
-    results.push(result.value)
-  }
-  return success(currentCtx, results, 0)
-}
 
-export const many1: <T>(parser: Parser<T>) => Parser<T[]> = <T>(parser: Parser<T>) => (ctx) => {
-  const headResult = parser(ctx)
-  if(headResult.kind === 'error') return headResult;
+    return success(currentCtx, results, 0);
+  };
 
-  const manyResult = many(parser)(headResult.context)
+export const and: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T[]> =
+  <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx) => {
+    const results: T[] = [];
+    let currentCtx = ctx;
 
-  if(manyResult.kind === 'success') {
-    return success(manyResult.context, [headResult.value, ...manyResult.value], 0)
-  }
-
-  throw new Error("unreachable")
-}
-
-export const str: (value: string) => Parser<string[]> = (value) => and([...value].map(char))
-
-export const countMinMax: <T>(min: number, max: number, parser: Parser<T>) => Parser<T[]> = <T>(min: number, max: number, parser: Parser<T>) => (ctx) => {
-  const results = many(parser)(ctx)
-
-  if(results.kind === 'success') {
-    if(results.value.length < min) {
-      return failure(results.context, `match count < ${min}`)
+    for (const parser of parsers) {
+      const result = parser(currentCtx);
+      if (result.kind === "error") {
+        return result;
+      }
+      currentCtx = result.context;
+      results.push(result.value);
     }
-    if(max < results.value.length) {
-      return failure(results.context, `${max} < match count`)
+
+    return success(currentCtx, results, 0);
+  };
+
+export const many: <T>(parser: Parser<T>) => Parser<T[]> =
+  <T>(parser: Parser<T>) => (ctx) => {
+    const results: T[] = [];
+    let currentCtx = ctx;
+
+    while (currentCtx.rest.length != 0) {
+      const result = parser(currentCtx);
+      currentCtx = result.context;
+      if (result.kind === "error") {
+        return success(currentCtx, results, 0);
+      }
+      results.push(result.value);
     }
-    return success(results.context, results.value, 0)
-  }
+    return success(currentCtx, results, 0);
+  };
 
-  throw new Error("unreachable")
-}
+export const many1: <T>(parser: Parser<T>) => Parser<T[]> =
+  <T>(parser: Parser<T>) => (ctx) => {
+    const headResult = parser(ctx);
+    if (headResult.kind === "error") return headResult;
 
-export const map: <T,U>(parser: Parser<T>, fn: (v: T) => U) => Parser<U> = (parser, fn) => (ctx) => {
-  const result = parser(ctx)
-  return result.kind === 'success' ? success(result.context, fn(result.value), 0) : result
-}
+    const manyResult = many(parser)(headResult.context);
 
-export const mapErr: <T>(parser: Parser<T>, fn: (v: string) => string) => Parser<T> = (parser, fn) => (ctx) => {
-  const result = parser(ctx)
-  return result.kind === 'error' ? failure(result.context, fn(result.expected)) : result
-}
+    if (manyResult.kind === "success") {
+      return success(manyResult.context, [
+        headResult.value,
+        ...manyResult.value,
+      ], 0);
+    }
 
-export const surround: <T>(openChar: string, closeChar: string, parser: Parser<T>) => Parser<T> = <T>(openChar: string, closeChar: string, parser: Parser<T>) => (ctx) => {
-  return map(and<T>(
-    [char(openChar) as never, parser, char(closeChar) as never]
-  ), ([_, value]) => {
-    return value
-  })(ctx)
-}
+    throw new Error("unreachable");
+  };
 
-export const createParser: <T>(parser: Parser<T>) => (target: string) => Result<T> = (parser) => (target) => {
+export const str: (value: string) => Parser<string[]> = (value) =>
+  and([...value].map(char));
+
+export const satisfy: (predicate: (c: string) => boolean) => Parser<string> =
+  (predicate) => (ctx) => {
+    const [head, _] = ctx.rest;
+    const isMatched = predicate(head);
+    return isMatched
+      ? success(ctx, head, 1)
+      : failure(ctx, "no match predicate");
+  };
+
+export const not: <T>(parser: Parser<T>) => Parser<never> =
+  (parser) => (ctx) => {
+    const headResult = parser(ctx)
+    if(headResult.kind === 'error') {
+      return success(ctx, null as never, 1)
+    }
+    return failure(ctx, 'matched')
+  };
+
+export const skip: <T>(parser: Parser<T>) => Parser<never> =
+  (parser) => (ctx) => {
+    const headResult = parser(ctx)
+    if(headResult.kind === 'success') {
+      return success(ctx, null as never, 1)
+    }
+    return failure(ctx, headResult.expected)
+  };
+
+export const countMinMax: <T>(
+  min: number,
+  max: number,
+  parser: Parser<T>,
+) => Parser<T[]> =
+  <T>(min: number, max: number, parser: Parser<T>) => (ctx) => {
+    const results = many(parser)(ctx);
+
+    if (results.kind === "success") {
+      if (results.value.length < min) {
+        return failure(results.context, `match count < ${min}`);
+      }
+      if (max < results.value.length) {
+        return failure(results.context, `${max} < match count`);
+      }
+      return success(results.context, results.value, 0);
+    }
+
+    throw new Error("unreachable");
+  };
+
+export const map: <T, U>(parser: Parser<T>, fn: (v: T) => U) => Parser<U> =
+  (parser, fn) => (ctx) => {
+    const result = parser(ctx);
+    return result.kind === "success"
+      ? success(result.context, fn(result.value), 0)
+      : result;
+  };
+
+export const mapErr: <T>(
+  parser: Parser<T>,
+  fn: (v: string) => string,
+) => Parser<T> = (parser, fn) => (ctx) => {
+  const result = parser(ctx);
+  return result.kind === "error"
+    ? failure(result.context, fn(result.expected))
+    : result;
+};
+
+export const surround: <T>(
+  openChar: string,
+  closeChar: string,
+  parser: Parser<T>,
+) => Parser<T> =
+  <T>(openChar: string, closeChar: string, parser: Parser<T>) => (ctx) => {
+    return map(
+      and<T>(
+        [skip(char(openChar)), parser, skip(char(closeChar))],
+      ),
+      ([_, value]) => {
+        return value;
+      },
+    )(ctx);
+  };
+
+export const createParser: <T>(
+  parser: Parser<T>,
+) => (target: string) => Result<T> = (parser) => (target) => {
   const ctx: Context = {
     text: target,
     rest: target,
-    position: 0
-  }
+    position: 0,
+  };
 
-  return parser(ctx)
-}
+  return parser(ctx);
+};

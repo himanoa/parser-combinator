@@ -17,7 +17,7 @@ import {
   str,
   surround,
 } from "./mod.ts";
-import { assertEquals } from "https://deno.land/std@0.65.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.159.0/testing/asserts.ts";
 
 const createCtx = (txt: string): Context => {
   return {
@@ -461,7 +461,7 @@ Deno.test("not:success", () => {
   const txt = 'ab'
   assertEquals(not(satisfy((c) => c == 'd'))(createCtx(txt)), {
     kind: 'success',
-    value: null,
+    value: null as never,
     context: {
       text: txt,
       rest: 'b',
@@ -487,11 +487,24 @@ Deno.test("skip:success", () => {
   const txt = 'ab'
   assertEquals(skip(char('a'))(createCtx(txt)), {
     kind: 'success',
-    value: null,
+    value: null as never,
     context: {
       text: txt,
       rest: 'b',
       position: 1
+    }
+  })
+})
+
+Deno.test("skip:success:many", () => {
+  const txt = 'aab'
+  assertEquals(skip(count(2, char('a')))(createCtx(txt)), {
+    kind: 'success',
+    value: null as never,
+    context: {
+      text: txt,
+      rest: 'b',
+      position: 2
     }
   })
 })

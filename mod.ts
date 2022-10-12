@@ -165,7 +165,7 @@ export const skip: <T>(parser: Parser<T>) => Parser<never> =
   (parser) => (ctx) => {
     const headResult = parser(ctx)
     if(headResult.kind === 'success') {
-      return success(ctx, null as never, 1)
+      return success(headResult.context, null as never, 0)
     }
     return failure(ctx, headResult.expected)
   };

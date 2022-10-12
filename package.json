@@ -1,6 +1,6 @@
 {
   "name": "@himanoa/parser-combinator",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "parser combinator",
   "author": "himanoa",
   "license": "MIT"

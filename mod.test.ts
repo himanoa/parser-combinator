@@ -204,28 +204,34 @@ Deno.test("count:failed", () => {
 
 Deno.test("and:success", () => {
   const txt = "true";
-  assertEquals(and([char('t'), char('r'), char('u'), char('e')])(createCtx(txt)), {
-    kind: "success",
-    value: ['t', 'r', 'u', 'e'],
-    context: {
-      text: txt,
-      rest: "",
-      position: 4,
+  assertEquals(
+    and([char("t"), char("r"), char("u"), char("e")])(createCtx(txt)),
+    {
+      kind: "success",
+      value: ["t", "r", "u", "e"],
+      context: {
+        text: txt,
+        rest: "",
+        position: 4,
+      },
     },
-  });
+  );
 });
 
 Deno.test("and:failed", () => {
   const txt = "tru e";
-  assertEquals(and([char('t'), char('r'), char('u'), char('e')])(createCtx(txt)), {
-    kind: "error",
-    expected: "  is not e",
-    context: {
-      text: txt,
-      rest: " e",
-      position: 3,
+  assertEquals(
+    and([char("t"), char("r"), char("u"), char("e")])(createCtx(txt)),
+    {
+      kind: "error",
+      expected: "  is not e",
+      context: {
+        text: txt,
+        rest: " e",
+        position: 3,
+      },
     },
-  });
+  );
 });
 
 Deno.test("many:success:empty", () => {

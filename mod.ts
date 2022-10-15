@@ -83,10 +83,11 @@ export const char: <T extends string[0]>(c: T) => Parser<T> = (c) => (ctx) => {
     : failure(ctx, `${char != null ? char : ""} is not ${c}`);
 };
 
-export const choice: <T>(parsers: ReadonlyArray<Parser<T>>) => Parser<T> =
-  <T>(parsers: ReadonlyArray<Parser<T>>) => (ctx: Context) => {
+export const choice: <Tuple extends readonly unknown[]>(parsers: Tuple & ValidateParserTuple<Tuple>) => Tuple[number] =
+  (parsers: readonly unknown[]) => (ctx: Context) => {
     for (const parser of parsers) {
-      const result = parser(ctx);
+      // deno-lint-ignore no-explicit-any
+      const result = (parser as any as Parser<unknown>)(ctx);
       if (result.kind === "success") return result;
     }
     return failure(ctx, "");

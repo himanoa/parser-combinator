@@ -533,27 +533,27 @@ Deno.test("skip:error", () => {
 });
 
 Deno.test("optional:success when token exists", () => {
-  const txt1 = 'ab';
-  assertEquals(optional(char('a'))(createCtx(txt1)), {
-    kind: 'success',
-    value: 'a',
+  const txt1 = "ab";
+  assertEquals(optional(char("a"))(createCtx(txt1)), {
+    kind: "success",
+    value: "a",
     context: {
-      text: 'ab',
-      rest: 'b',
-      position: 1
-    }
-  })
-})
+      text: "ab",
+      rest: "b",
+      position: 1,
+    },
+  });
+});
 
 Deno.test("optional:success when token not exist", () => {
-  const txt1 = 'b';
-  assertEquals(optional(char('a'))(createCtx(txt1)), {
-    kind: 'success',
+  const txt1 = "b";
+  assertEquals(optional(char("a"))(createCtx(txt1)), {
+    kind: "success",
     value: null,
     context: {
-      text: 'b',
-      rest: 'b',
-      position: 0
-    }
-  })
-})
+      text: "b",
+      rest: "b",
+      position: 0,
+    },
+  });
+});

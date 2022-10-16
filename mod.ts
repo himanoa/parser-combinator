@@ -83,15 +83,16 @@ export const char: <T extends string[0]>(c: T) => Parser<T> = (c) => (ctx) => {
     : failure(ctx, `${char != null ? char : ""} is not ${c}`);
 };
 
-export const choice: <Tuple extends readonly unknown[]>(parsers: Tuple & ValidateParserTuple<Tuple>) => Tuple[number] =
-  (parsers: readonly unknown[]) => (ctx: Context) => {
-    for (const parser of parsers) {
-      // deno-lint-ignore no-explicit-any
-      const result = (parser as any as Parser<unknown>)(ctx);
-      if (result.kind === "success") return result;
-    }
-    return failure(ctx, "");
-  };
+export const choice: <Tuple extends readonly unknown[]>(
+  parsers: Tuple & ValidateParserTuple<Tuple>,
+) => Tuple[number] = (parsers: readonly unknown[]) => (ctx: Context) => {
+  for (const parser of parsers) {
+    // deno-lint-ignore no-explicit-any
+    const result = (parser as any as Parser<unknown>)(ctx);
+    if (result.kind === "success") return result;
+  }
+  return failure(ctx, "");
+};
 
 export const count: <T>(count: number, parser: Parser<T>) => Parser<T[]> =
   <T>(count: number, parser: Parser<T>) => (ctx) => {
@@ -165,7 +166,7 @@ export const many1: <T>(parser: Parser<T>) => Parser<T[]> =
   };
 
 export const str: (value: string) => Parser<string[]> = (value) =>
-  and(([...value]).map(char));
+  and([...value].map(char));
 
 export const satisfy: (predicate: (c: string) => boolean) => Parser<string> =
   (predicate) => (ctx) => {
@@ -249,13 +250,14 @@ export const surround: <T>(
     )(ctx);
   };
 
-export const optional: <T>(parser: Parser<T>) => Parser<T | null> = (parser) => (ctx) => {
-  const result = parser(ctx)
-  if(result.kind === 'error') {
-    return success(ctx, null, 0)
-  }
-  return success(result.context, result.value, 0)
-}
+export const optional: <T>(parser: Parser<T>) => Parser<T | null> =
+  (parser) => (ctx) => {
+    const result = parser(ctx);
+    if (result.kind === "error") {
+      return success(ctx, null, 0);
+    }
+    return success(result.context, result.value, 0);
+  };
 
 export const createParser: <T>(
   parser: Parser<T>,

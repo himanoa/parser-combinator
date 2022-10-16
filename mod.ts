@@ -249,6 +249,14 @@ export const surround: <T>(
     )(ctx);
   };
 
+export const optional: <T>(parser: Parser<T>) => Parser<T | null> = (parser) => (ctx) => {
+  const result = parser(ctx)
+  if(result.kind === 'error') {
+    return success(ctx, null, 0)
+  }
+  return success(result.context, result.value, 0)
+}
+
 export const createParser: <T>(
   parser: Parser<T>,
 ) => (target: string) => Result<T> = (parser) => (target) => {

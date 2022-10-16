@@ -64,3 +64,4 @@ console.log(
 - not: Reverse parser result
 - skip: Crush parse results with never
 - satisfy: Parses a token and succeeds depending on the result of predicate
+- optional: Parse a token and return a or null. Return null when failed parse.
